@@ -184,7 +184,41 @@ class Assignment1:
 
         # Answer : No
 
+    def question_eight(self):
+        """
+         8. What age category did the fewest and the most participants of the
+         2008 Olympics belong to?
+        """
+
+        year_filter_condition = self.data['Year'] == 2008
+        self.data['Age Range'] = self.data[['Age']]\
+            .dropna(subset=['Age'])\
+            .apply(
+                lambda age: self.get_age_range(age[0]), axis=1
+            )
+
+        age_data = self.data\
+            .where(year_filter_condition)\
+            .groupby('Age Range')\
+            .count()\
+            .sort_values(by=['Age'], ascending=False)
+
+        print(age_data.head())
+
+        # Answer : [45-55] and [25-35) correspondingly
+
+    def get_age_range(self, age: int):
+        if age <= 5:
+            return "5-15"
+
+        if age % 10 < 5:
+            lower = int(age / 10) * 10 - 5
+            return str(lower) + "-" + str(lower+10)
+
+        lower = int(age / 10) * 10 + 5
+        return str(lower) + "-" + str(lower + 10)
+
 
 if __name__ == '__main__':
     assignment = Assignment1()
-    assignment.question_seven()
+    assignment.question_eight()
