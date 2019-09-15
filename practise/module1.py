@@ -33,14 +33,19 @@ class Assignment1:
 
     def question_one(self):
         """
-        How old were the youngest male and female participants of the 1992 Olympics?
+        How old were the youngest male and female participants of the 1992
+        Olympics?
         """
         year_filter_condition = self.data['Year'] == 1992
         male_filter_condition = self.data['Sex'] == 'M'
         female_filter_condition = self.data['Sex'] == 'F'
 
-        youngest_male = self.data.where(year_filter_condition & male_filter_condition)['Age'].min()
-        youngest_female = self.data.where(year_filter_condition & female_filter_condition)['Age'].min()
+        youngest_male = \
+            self.data.where(year_filter_condition & male_filter_condition)[
+                'Age'].min()
+        youngest_female = \
+            self.data.where(year_filter_condition & female_filter_condition)[
+                'Age'].min()
 
         print('Question 1 Answer')
         print('Youngest male ', youngest_male)
@@ -50,10 +55,12 @@ class Assignment1:
 
     def question_two(self):
         """
-        2. What was the percentage of male basketball players among all the male participants of the 2012 Olympics?
+        2. What was the percentage of male basketball players among all the
+        male participants of the 2012 Olympics?
         Round the answer to the first decimal.
 
-        Hint: here and further if needed drop duplicated sportsmen to count only unique ones.
+        Hint: here and further if needed drop duplicated sportsmen to count
+        only unique ones.
         """
 
         # print(self.data['Sport'].head())
@@ -63,13 +70,16 @@ class Assignment1:
         game_filter_condition = self.data['Sport'] == 'Basketball'
 
         total_male_players = self.data.where(year_filter_condition
-                                             & male_filter_condition)['ID'].drop_duplicates()
+                                             & male_filter_condition)[
+            'ID'].drop_duplicates()
 
         total_male_basketball = self.data.where(year_filter_condition
                                                 & male_filter_condition
-                                                & game_filter_condition)['ID'].drop_duplicates()
+                                                & game_filter_condition)[
+            'ID'].drop_duplicates()
 
-        percentage = round(len(total_male_basketball) / len(total_male_players) * 100, 1)
+        percentage = round(
+            len(total_male_basketball) / len(total_male_players) * 100, 1)
 
         print('Question 2 Answer')
         print('Total male basketball players', len(total_male_basketball))
@@ -81,7 +91,8 @@ class Assignment1:
 
     def question_three(self):
         """
-        3. What are the mean and standard deviation of height for female tennis players who participated in the 2000
+        3. What are the mean and standard deviation of height for female
+        tennis players who participated in the 2000
         Olympics? Round the answer to the first decimal.
         """
 
@@ -106,7 +117,8 @@ class Assignment1:
 
     def question_four(self):
         """
-        4. Find a sportsman who participated in the 2006 Olympics, with the highest weight among other participants of
+        4. Find a sportsman who participated in the 2006 Olympics, with the
+        highest weight among other participants of
         the same Olympics. What sport did he or she do?
         """
 
@@ -123,21 +135,26 @@ class Assignment1:
 
     def question_five(self):
         """
-            5. How many times did John Aalberg participate in the Olympics held in different years?
+            5. How many times did John Aalberg participate in the Olympics
+            held in different years?
         """
 
         name_filter_condition = self.data['Name'] == 'John Aalberg'
 
-        john_data = self.data.where(name_filter_condition).drop_duplicates(subset='Year').dropna(subset=['Name'])
+        john_data = self.data.where(name_filter_condition).drop_duplicates(
+            subset='Year').dropna(subset=['Name'])
 
         freq = len(john_data)
 
         print('Question 5 Answer')
-        print('Number of times John Aalberg participated ', freq)
+        print('Number of times John Aalberg participated', freq)
+
+        # Answer = 2
 
     def question_six(self):
         """
-        6. How many gold medals in tennis did sportspeople from the Switzerland team win at the 2008 Olympics?
+        6. How many gold medals in tennis did sportspeople from the
+        Switzerland team win at the 2008 Olympics?
         Count every medal from every sportsperson.
         """
 
@@ -153,13 +170,15 @@ class Assignment1:
                                                 ).dropna(subset=['Medal'])
 
         print('Question 6 Answer')
-        print('Number of gold medals in tennis from switzerland in 2008 ', len(switzerland_gold_data))
+        print('Number of gold medals in tennis from switzerland in 2008 ',
+              len(switzerland_gold_data))
 
         # Answer = 2
 
     def question_seven(self):
         """
-         Is it true that Spain won fewer medals than Italy at the 2016 Olympics? Do not consider NaN values in Medal
+         Is it true that Spain won fewer medals than Italy at the 2016
+         Olympics? Do not consider NaN values in Medal
          column.
         """
 
@@ -168,8 +187,12 @@ class Assignment1:
 
         year_filter_condition = self.data['Year'] == 2016
 
-        spain_medals_data = self.data.where(spain_filter_condition & year_filter_condition).dropna(subset=['Medal'])
-        italy_medals_data = self.data.where(italy_filter_condition & year_filter_condition).dropna(subset=['Medal'])
+        spain_medals_data = self.data.where(
+            spain_filter_condition & year_filter_condition).dropna(
+            subset=['Medal'])
+        italy_medals_data = self.data.where(
+            italy_filter_condition & year_filter_condition).dropna(
+            subset=['Medal'])
 
         spain_medals = len(spain_medals_data)
         italy_medals = len(italy_medals_data)
@@ -191,34 +214,94 @@ class Assignment1:
         """
 
         year_filter_condition = self.data['Year'] == 2008
-        self.data['Age Range'] = self.data[['Age']]\
-            .dropna(subset=['Age'])\
+        self.data['Age Range'] = self.data[['Age']] \
+            .dropna(subset=['Age']) \
             .apply(
-                lambda age: self.get_age_range(age[0]), axis=1
-            )
+            lambda age: get_age_range(age[0]), axis=1
+        )
 
-        age_data = self.data\
-            .where(year_filter_condition)\
-            .groupby('Age Range')\
-            .count()\
+        age_data = self.data \
+            .where(year_filter_condition) \
+            .groupby('Age Range') \
+            .count() \
             .sort_values(by=['Age'], ascending=False)
 
         print(age_data.head())
 
+        def get_age_range(age: int):
+            if age <= 5:
+                return "5-15"
+
+            if age % 10 < 5:
+                lower = int(age / 10) * 10 - 5
+                return str(lower) + "-" + str(lower + 10)
+
+            lower = int(age / 10) * 10 + 5
+            return str(lower) + "-" + str(lower + 10)
+
         # Answer : [45-55] and [25-35) correspondingly
 
-    def get_age_range(self, age: int):
-        if age <= 5:
-            return "5-15"
+    def question_nine(self):
+        """
+         9. Is it true that there were Summer Olympics held in Atlanta? Is it
+         true that there were Winter Olympics held in Squaw Valley?
+        """
+        # print(self.data.info())
+        # print(self.data['Season'].head())
 
-        if age % 10 < 5:
-            lower = int(age / 10) * 10 - 5
-            return str(lower) + "-" + str(lower+10)
+        atlanta_filter_condition = self.data['City'] == 'Atlanta'
+        squaw_filter_condition = self.data['City'] == 'Squaw Valley'
 
-        lower = int(age / 10) * 10 + 5
-        return str(lower) + "-" + str(lower + 10)
+        summer_filter_condition = self.data['Season'] == 'Summer'
+        winter_fitler_condition = self.data['Season'] == 'Winter'
+
+        atlanta_olympic = self.data.where(
+            atlanta_filter_condition & summer_filter_condition).dropna(
+            subset=['City'])
+
+        squaw_olympic = self.data.where(
+            squaw_filter_condition & winter_fitler_condition).dropna(
+            subset=['City'])
+
+        if len(atlanta_olympic):
+            print('Yes, Summer olympics were once held in Atlanta')
+        else:
+            print('No, Summer olympics were never held in Atlanta')
+
+        if len(squaw_olympic):
+            print('Yes, Winter olympics were once held in Squaw Valley')
+        else:
+            print('No, Winter olympics were never held in Squaw Valley')
+
+        # Answer : yes, yes
+
+    def question_ten(self):
+        """
+         10. What is the absolute difference between the number of unique
+         sports at the 1986 Olympics and 2002 Olympics?
+        """
+
+        year_1986_filter = self.data['Year'] == 1986
+        year_2002_filter = self.data['Year'] == 2002
+
+        total_sports_in_1986 = len(
+            self.data
+                .where(year_1986_filter)
+                .drop_duplicates(subset=['Sport'])
+        )
+
+        total_sports_in_2002 = len(
+            self.data
+                .where(year_2002_filter)
+                .drop_duplicates(subset=['Sport'])
+        )
+
+        print('The absolute difference is',
+              abs(total_sports_in_1986 - total_sports_in_2002))
+
+        # Answer = 15
 
 
 if __name__ == '__main__':
     assignment = Assignment1()
-    assignment.question_eight()
+    assignment.question_ten()
